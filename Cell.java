@@ -1,37 +1,80 @@
+import java.util.ArrayList;
+
 public class Cell{
     // Constructors
-    public Cell(){
-        // TODO: the method and parameter of the function to be decided
-        //  also number of constructors?
+    public Cell(int l,int w){
+        p1 = l;
+        p2 = w; 
     }
-    // A constructor assigning the thereshold
-    // Methods
-    public void putAtom(){
-        // decide the threading sratergy
-        // check fot the crossing of the treshold and take appropriate
-        // TODO: The function pattern and the type of transfer(as in like the atom is sent as object or some other stuff like color is going to be sent) to be decided
+    
+    public Cell(int i,int j,int t){
+        this(i,j);
+        setThreshold(t);
     }
-        // build a reset  method in it
+
+    public Cell(Cell cell) {
+        this.threshold = cell.threshold;
+        this.p1 = cell.p1;
+        this.p2 = cell.p2;
+        for(Atom i:cell.atomsInIt)
+            this.atomsInIt.add(new Atom(i));
+	}
+
+	// Methods
+    public void putAtom(Atom a){
+        int new_color = a.getColor();
+        if(this.atomCount() != 0){
+            if( this.atomsInIt.get(0).getColor() != new_color){
+                controller.get().newCellCaptured(this.atomsInIt.get(0).getColor(),new_color);
+                for(Atom eachAtom: atomsInIt)
+                    eachAtom.setColor(new_color);
+            }
+        }
+        else{
+            controller.get().newCellEstablished(a.getColor());
+        }
+        this.atomsInIt.add(a);
+        controller.get().AddToTlist(new Pair(this.p1, this.p2));
+    }
+    
+    public synchronized void split(){
+        if(this.atomCount() > this.getThreshold()){
+            if ((p1 >= 0)&&(p2 >=0)&&(p1<Grid.getGrid().l)&&(p2<Grid.getGrid().w)){
+                if ((p1+1 >= 0)&&(p2 >=0)&&(p1+1<Grid.getGrid().l)&&(p2<Grid.getGrid().w))
+                    Grid.getGrid().cellList[p1+1][p2].putAtom(atomsInIt.remove(0));
+                if ((p1-1 >= 0)&&(p2 >=0)&&(p1-1<Grid.getGrid().l)&&(p2<Grid.getGrid().w))
+                    Grid.getGrid().cellList[p1-1][p2].putAtom(atomsInIt.remove(0));
+                if ((p1 >= 0)&&(p2-1 >=0)&&(p1<Grid.getGrid().l)&&(p2-1<Grid.getGrid().w))
+                    Grid.getGrid().cellList[p1][p2-1].putAtom(atomsInIt.remove(0));
+                if ((p1 >= 0)&&(p2+1 >=0)&&(p1<Grid.getGrid().l)&&(p2+1<Grid.getGrid().w))
+                    Grid.getGrid().cellList[p1][p2+1].putAtom(atomsInIt.remove(0));
+            }
+        }
+    }
+    
+    public void reset(){
+        atomsInIt.removeAll(atomsInIt);
+    }
     
     // Setters
-    // remove the set function
     public void setThreshold(int t){
         threshold = t;
-        // is it required or just the constructor must do this instantiation?
     }
     
     // Getters
     public int getThreshold(){
         return threshold;
     }
-    // add a getter to return the number of atoms at present
+    public int atomCount(){
+        return atomsInIt.size();
+    }
 
     // Variables
     private int threshold;
-    // add the atoms in the arrayList named atomsInIt 
+    private int p1,p2;
+    private ArrayList<Atom>atomsInIt;
     
     /*
-     * Are we going to have the threshold as a variable? or the Cell as the basic class and the types of cells as a derieved one ? The threshold one must work
      * The Access Specifiers
      * are the number of atoms in a cell going to be a number or itself going to be embeded objects? Embeded objects
     */
