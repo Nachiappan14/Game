@@ -1,11 +1,13 @@
 
-
 public class Grid{
     // Constructors
-    public Grid(int i,int j){
-        l = i;
-        w = j;
-        cellList = new Cell[l][w];
+    public Grid(int a,int b){
+        this.l = a;
+        this.w = b;
+        cellList = new Cell[this.l][this.w];
+        for(int i=0;i<this.l;i++)
+            for(int j=0;j<this.w;j++)
+                this.cellList[i][j] = new Cell(i,j,(i+j==0)?2:(i*j==0)?3:4);
         lastGrid = this;
     }
     public Grid(Grid a){
@@ -21,14 +23,18 @@ public class Grid{
     // Setters
     
     // Getters
+    public Cell getCell(Pair p){
+        return cellList[p.first()][p.second()];
+    }
+    
     static public Grid getGrid(){
         return lastGrid;
     }
     public int getL(){
-        return l;
+        return this.l;
     }
     public int getW(){
-        return w;
+        return this.w;
     }
 
     // Variables

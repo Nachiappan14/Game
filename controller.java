@@ -1,31 +1,75 @@
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class controller {
-    public controller(){
-        // TODO: fill the required variables
+    public controller(int numberOfPlayers,int grid_len,int grid_wid){
+        this.numberOfPlayers = numberOfPlayers;
+        this.gameGrid = new Grid(grid_len, grid_wid);
+        this.previousVersion = new Grid(this.gameGrid);
+        this.playersInGame = numberOfPlayers;
+        this.playerActive = new ArrayList<Boolean>(numberOfPlayers);
+        for(Boolean iter: playerActive)
+            iter = true;
+        this.cellsCaptured = new ArrayList<>(numberOfPlayers);
+        for(Integer iter: cellsCaptured)
+            iter = 0;
+        this.TList = new ArrayList<>();
+        this.endGame = false;
         LastController = this;
+        cin = new Scanner(System.in);
+        out = new text_view();
+        this.game();
     }
 
     public void AddToTlist(Pair a){
         TList.add(a);
     }
 
-    public void game(){
+    private void game(){
         int moveNumber = 0;
         while(!endGame){
-            if(this.playerActive.get(moveNumber % numberOfPlayers) == true){
-                // TODO: the code for the game goes here
+            int playerToMove = moveNumber % this.numberOfPlayers;
+            if(this.playerActive.get(moveNumber % this.numberOfPlayers) == true){
+                Pair movePos = this.getMove(moveNumber);
+                while(!this.makeMove(movePos,new Atom(playerToMove))){
+                    // Alert that the previous input is assumed to be invalid (Enhancement)
+                    movePos = this.getMove(moveNumber);
+                }
+                out.render();
+                moveNumber += 1;
             }
-            moveNumber += 1;
         }
+        System.out.println("THE WINNER IS PLAYER NUMBER<Indexed 0> ="+ this.playerActive.indexOf(true));
     }
 
-    public void getMove(int player_id){
-        //TODO: a function to get the position of the click and eventualy be linked to display part
+    public Pair getMove(int player_id){
+        String ipt = cin.nextLine();
+        String[] tokens = ipt.split("[<>, ]+");
+        return new Pair(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]));
+        //This function to get the position of the click and eventualy be linked to display part for taking input
     }
 
-    public void makeMove(Pair pos){
-        // TODO: the required work processing for the made move
+    public boolean makeMove(Pair pos,Atom a){
+        boolean result;
+        try{
+            result = this.gameGrid.getCell(pos).newAtom(a);
+        }catch(java.lang.ArrayIndexOutOfBoundsException e){
+            result = false;
+        }
+        if(result){
+            ArrayList<pSplit> currentThreads;
+            while (!TList.isEmpty())
+                currentThreads = new ArrayList<>();
+                for(Pair p: this.TList){
+                    pSplit spliter = new pSplit(p);
+                    spliter.start();
+                    currentThreads.add(spliter);
+                }
+                for(pSplit p: currentThreads)
+                    p.join();
+        }
+        return result;
     }
 
     public static controller get(){
@@ -43,7 +87,7 @@ public class controller {
         this.playerActive.set(owner_id,false);
         playersInGame -= 1;
         if(playersInGame == 1)
-            endGame = true;
+            this.endGame = true;
         // kick the player out of the game
     }
 
@@ -51,15 +95,22 @@ public class controller {
         this.cellsCaptured.set(new_owner, this.cellsCaptured.get(new_owner)+1);
     }
 
+    public synchronized void vacateCell(int owner) {
+        this.cellsCaptured.set(owner,this.cellsCaptured.get(owner)-1);
+    }
+
     int numberOfPlayers;
-    List<Pair> TList;
+    ArrayList<Pair> TList;
     List<Player> PList;// decide if this is wanted
     List<Integer> cellsCaptured;
     static controller LastController;
     List<Boolean> playerActive;
     int playersInGame;
     boolean endGame;
-
+    Grid gameGrid;
+    Grid previousVersion;
+    java.util.Scanner cin;
+    view out;
     /*
      * Maintain the Player as a seperate object or just put it as variables here?
     */

@@ -1,5 +1,3 @@
-public class view {
-    public void render(){
-        
-    }
+public abstract class view {
+    public abstract void render();
 }
