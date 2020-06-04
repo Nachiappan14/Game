@@ -4,7 +4,8 @@ public class Cell{
     // Constructors
     public Cell(int l,int w){
         p1 = l;
-        p2 = w; 
+        p2 = w;
+        this.atomsInIt = new ArrayList<>();
     }
     
     public Cell(int i,int j,int t){
@@ -20,6 +21,7 @@ public class Cell{
         this.threshold = cell.threshold;
         this.p1 = cell.p1;
         this.p2 = cell.p2;
+        this.atomsInIt = new ArrayList<>();
         for(Atom i:cell.atomsInIt)
             this.atomsInIt.add(new Atom(i));
 	}

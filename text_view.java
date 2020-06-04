@@ -14,5 +14,5 @@ public class text_view extends view{
             System.out.print("\n");
         }
     }
-    Grid gameGrid;
+    Grid gameGrid = controller.get().gameGrid;
 }

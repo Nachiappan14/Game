@@ -1,8 +1,5 @@
 public class Atom{
     // Constructors
-    public Atom(){
-        // TODO: the method of the construction to be decided
-    }
     public Atom(int c){
         color = c;
     }

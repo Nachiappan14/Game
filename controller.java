@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -8,12 +10,8 @@ public class controller {
         this.gameGrid = new Grid(grid_len, grid_wid);
         this.previousVersion = new Grid(this.gameGrid);
         this.playersInGame = numberOfPlayers;
-        this.playerActive = new ArrayList<Boolean>(numberOfPlayers);
-        for(Boolean iter: playerActive)
-            iter = true;
-        this.cellsCaptured = new ArrayList<>(numberOfPlayers);
-        for(Integer iter: cellsCaptured)
-            iter = 0;
+        this.playerActive = new ArrayList<Boolean>(Collections.nCopies(this.numberOfPlayers,true));
+        this.cellsCaptured = new ArrayList<>(Collections.nCopies(this.numberOfPlayers,0));
         this.TList = new ArrayList<>();
         this.endGame = false;
         LastController = this;
@@ -26,11 +24,11 @@ public class controller {
         TList.add(a);
     }
 
-    private void game(){
+    public void game(){
         int moveNumber = 0;
         while(!endGame){
             int playerToMove = moveNumber % this.numberOfPlayers;
-            if(this.playerActive.get(moveNumber % this.numberOfPlayers) == true){
+            if(this.playerActive.get(playerToMove) == true){
                 Pair movePos = this.getMove(moveNumber);
                 while(!this.makeMove(movePos,new Atom(playerToMove))){
                     // Alert that the previous input is assumed to be invalid (Enhancement)
@@ -45,8 +43,10 @@ public class controller {
 
     public Pair getMove(int player_id){
         String ipt = cin.nextLine();
-        String[] tokens = ipt.split("[<>, ]+");
-        return new Pair(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]));
+        String[] tokens = ipt.split("[()<>{} ,]+",0);
+        if(ipt.charAt(0)!='(')
+            return new Pair(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]));
+        return new Pair(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
         //This function to get the position of the click and eventualy be linked to display part for taking input
     }
 
@@ -59,15 +59,24 @@ public class controller {
         }
         if(result){
             ArrayList<pSplit> currentThreads;
-            while (!TList.isEmpty())
+            while (!TList.isEmpty()){
                 currentThreads = new ArrayList<>();
-                for(Pair p: this.TList){
+                Iterator<Pair> itr = TList.iterator();
+                while(itr.hasNext()){
+                    Pair p = itr.next();
+                    itr.remove();
                     pSplit spliter = new pSplit(p);
-                    spliter.start();
                     currentThreads.add(spliter);
                 }
-                for(pSplit p: currentThreads)
-                    p.join();
+                for(pSplit p : currentThreads)
+                    p.start();
+                try{
+                    for(pSplit p: currentThreads)
+                        p.join();
+                }catch(Exception e){
+                    System.out.println(e);
+                }
+            }
         }
         return result;
     }
@@ -101,7 +110,7 @@ public class controller {
 
     int numberOfPlayers;
     ArrayList<Pair> TList;
-    List<Player> PList;// decide if this is wanted
+    // List<Player> PList;// decide if this is wanted
     List<Integer> cellsCaptured;
     static controller LastController;
     List<Boolean> playerActive;
