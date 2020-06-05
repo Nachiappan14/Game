@@ -35,8 +35,8 @@ public class controller {
                     movePos = this.getMove(moveNumber);
                 }
                 out.render();
-                moveNumber += 1;
             }
+            moveNumber += 1;
         }
         System.out.println("THE WINNER IS PLAYER NUMBER<Indexed 0> ="+ this.playerActive.indexOf(true));
     }
