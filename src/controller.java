@@ -19,7 +19,7 @@ public class controller {
         LastController = this;
         cin = new Scanner(System.in);
         out = new text_view();
-        this.game();
+        // this.game();
     }
 
     public void AddToTlist(Pair a){
@@ -109,6 +109,11 @@ public class controller {
     public void animateMove(Pair src,Pair dst,Atom a){
         out.animateAtom(src,dst,a);
     }
+
+    public Grid getGrid() {
+		return this.gameGrid;
+    }
+    
     int numberOfPlayers;
     ArrayList<Pair> TList;
     // List<Player> PList;// decide if this is wanted

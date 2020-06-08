@@ -1,3 +1,5 @@
 /t.txt
 /*.class
 /*/*.class
+/lib/*
+.vscode/*

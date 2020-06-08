@@ -1,5 +1,7 @@
 package src;
 
+import java.util.Iterator;
+
 public class Grid{
     // Constructors
     public Grid(int a,int b){
@@ -49,7 +51,10 @@ public class Grid{
     public int getW(){
         return this.w;
     }
-
+    public Cell[][] getCellList(){
+        return cellList;
+    }
+    
     // Variables
     int l,w;
     Cell[][] cellList;
