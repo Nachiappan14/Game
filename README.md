@@ -1,3 +1,3 @@
 # Game
 
-An attempt to make an good game :-}
+An attempt to make a good game :-}
